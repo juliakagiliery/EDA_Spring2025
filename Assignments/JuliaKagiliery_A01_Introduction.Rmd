@@ -26,18 +26,18 @@ Enter answers to the questions just below the >Answer: prompt.
 
 2. Are there any components of the course about which you feel confident?
 
-> Answer: 
+> Answer: I am confident in my data tidying and visuakization skills for certain types of data. I do have R and data visualization experience (enough to be dangerous, but it could certainly use some work) but I am looking forward to a refresher and to become more efficient in my code. I tend to take a brute force method when coding. 
 
 3. Are there any components of the course about which you feel apprehensive?
 
-> Answer: 
+> Answer: I would say the only thing I feel super apprehensive about would be the class fomrat. I tend to not enjoy filpped classrooms do to the large share of recorded lectures and videos; I often times do not find virtual classes super engaging. I am very much looking forward to learning more about geographic data in this course.  
 
 
 ## 2) GitHub
 
 Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository and that you have updated your course README file, committed those changes, and pushed them to your GitHub account. 
 
-> Answer: 
+> Answer: https://github.com/juliakagiliery/EDA_Spring2025
 
 ## 3) Knitting
 When you have completed this document, click the `knit` button.This should produce a PDF copy of your markdown document. Submit this PDF to Canvas 
