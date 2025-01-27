@@ -83,16 +83,16 @@ Find a 5-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. C
 ```{r Vector Exercise}
 
 #Assign to the variable 'temps_F' a vector of high temperatures in F
-
+temps_F <- c(37, 41, 44, 51, 51)
 
 #What is the average of these temperatures 
-
+mean(temps_F)
 
 #Compute the difference between each temperature and the average calculated above
-
+temps_F - mean(temps_F)
 
 #Subtract 32 and multiply by 5/9ths to create a vector in Celsius
-
+temps_F - 32 * (5/9)
 
 ```
 
