@@ -81,12 +81,22 @@ names(StudentInformation) <- c("StudentName", "TestScore", "Scholarship")
 
 ```{r basics 3}
 #10. Create a function using if...else
+PassingIf <- function(x){
+  if (x > 50)
+  print("Pass")
+  else print("Fail")
+}
 
 #11. Create a function using ifelse()
+PassingIfElse <- function(x){
+  ifelse (x > 50, "Pass", "Fail")
+}
 
 #12a. Run the first function with the value 52.5
+PassingIf(52.5)
 
 #12b. Run the second function with the value 52.5
+PassingIfElse(52.5)
 
 #13a. Run the first function with the vector of test scores
 
