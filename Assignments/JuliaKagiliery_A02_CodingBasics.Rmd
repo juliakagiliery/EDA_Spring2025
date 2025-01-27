@@ -99,13 +99,15 @@ PassingIf(52.5)
 PassingIfElse(52.5)
 
 #13a. Run the first function with the vector of test scores
+#PassingIf(TestScores) this does not work
 
 #13b. Run the second function with the vector of test scores
+PassingIfElse(TestScores)
 ```
 
 14. QUESTION: Which option of `if`...`else` vs. `ifelse` worked? Why? (Hint: search the web for "R vectorization")
 
-> Answer:
+> Answer: ifelse() is the function that worked for the vector. This is beacuse a vector has length greater than one (i.e. it is multiple data points) so when we run a function on a vector we are effectively asking the fuction to run x times for x different inputs where x represents the number of objects in a vector. For this example, we are asking the function to run 4 times, with each of the four different scores as an input. if...else() does not accept input with length longer than 1 so it will not accept vectors. We might be able to overcome the funtion's unwillingness to accept a vector with a loop. 
 
 
 **NOTE** Before knitting, you'll need to comment out the call to the function in Q13 that does not work. (A document can't knit if the code it contains causes an error!)
