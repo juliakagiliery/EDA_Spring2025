@@ -32,7 +32,7 @@ This exercise accompanies the lessons/labs in Environmental Data Analytics on co
 
 ```{r basics 1}
 #1. 
-FivesSequence <- seq(1, 55, by = 5) # generate a sequence starting at 1 up to 55 by increasinng by 5 each time, name these numbers FivesSequence
+FivesSequence <- seq(1, 55, 5) # generate a sequence starting at 1 up to 55 by increasinng by 5 each time, name these numbers FivesSequence
     
 #2. 
 mean(FivesSequence) #find the mean of the five sequence above
@@ -58,13 +58,18 @@ if (mean(FivesSequence) == median(FivesSequence))
 8.  Label the columns of your data frame with informative titles.
 
 ```{r basics 2}
+StudentNames <- c("Ben", "Brian", "William", "Sarah") # character vector of names
+TestScores <- c(97, 84, 43, 79) #double (i.e. numeric) vector
+Scholarship <- c(FALSE, TRUE, FALSE, FALSE) # logical vector 
+# type of vectors were evaluated using typeof() function
 
-
+StudentInformation <- data.frame(StudentNames, TestScores, Scholarship)
+names(StudentInformation) <- c("StudentName", "TestScore", "Scholarship")
 ```
 
 9.  QUESTION: How is this data frame different from a matrix?
 
-> Answer:
+> Answer: This data frame is different from a matrix because it contains multiple types of data (charcters, doubles, and logic varibles) whereas a matrix only contains one type of data. 
 
 10. Create a function with one input. In this function, use `if`...`else` to evaluate the value of the input: if it is greater than 50, print the word "Pass"; otherwise print the word "Fail". 
 
