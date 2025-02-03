@@ -58,27 +58,28 @@ Litter <- read.csv(here("Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv"), s
 4.  How is litter and woody debris sampled as part of the NEON network? Read the NEON_Litterfall_UserGuide.pdf document to learn more. List three pieces of salient information about the sampling methods here:
 
 > Answer: 
- 1.
- 2.
- 3. 
+ 1. Litter is defined as material that drops from the forest canopy with a butt end diameter less than 2 cm and a length less than 50 cm which is collected in an elevanted (at 80 cm off the ground) 0.5m^2 PVC trap. Fine wood debries is definied material that is dropped from the forest canpoy but exceeds the 2 cm diameter and the 50 cm length which is collected in ground traps which have an area of 3 m x 0.5 m. 
+ 2. The sampling is executed at sites that contain vegetation that are taller than 2 meters. 
+ 3. Ground traps are sampled once per year, frequency of elevated trap sampling depends on the vegetation present at the site which rannges from once every other week to once every one are two months. 
 
 ## Obtain basic summaries of your data (Neonics)
 
 5.  What are the dimensions of the dataset?
 
 ```{r}
-
-
+print(dim(Neonics))
 ```
+> Answer:  The dataset has the dimensions 4623 x 30.
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest? [Tip: The `sort()` command is useful for listing the values in order of magnitude...]
 
 ```{r}
-
-
+NeonicsSummary <- summary(Neonics$Effect)
+NeonicsSummary <- sort(NeonicsSummary, decreasing = TRUE)
+head(NeonicsSummary)
 ```
 
-> Answer:
+> Answer: The three most common effects studied include population, mortality, and behavior. Population and mortality are by far the two most studied with 1803 and 1493 studies. These two effects are likely the most studied because population ammount (which is related to mortality) can impact the ecosystem as a whole. If the insect (as most insects are) is a part of the food chain or provide ecosystem functions (like controlling pests or polinating), then the ammount of insects around to serve these roles has implications for the entire system (whereas maybe development or behavior does not has as wide of an ecosystem impact). Furthermore, population and mortality are easy to measure (as it involves counting the number of organisms and or figuring out if they are alive) and therefore relatively easy to measure whereas other effects on development or behavior might be more complicated to study.
 
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: Explore the help on the `summary()` function, in particular the `maxsum` argument...]
