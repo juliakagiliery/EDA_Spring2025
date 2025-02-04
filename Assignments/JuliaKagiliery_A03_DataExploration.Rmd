@@ -125,18 +125,21 @@ ggplot(aes(x = Publication.Year, color = Test.Location)) +
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
 
-> Answer:
+> Answer: The most common testing lactions are the lab and natural field sites. The lab seems to be the dominat site from the early 1980s to the early 1990s when field sites over take that until the year 2000. The lab becomes more popular again in the mid 200s. Just before 2010, natural field research peaks, but since then, it appears that lab research has largely been the most published. 
 
 11. Create a bar graph of Endpoint counts. What are the two most common end points, and how are they defined? Consult the ECOTOX_CodeAppendix for more information. 
 
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
 ```{r}
-
-
+Neonics |>
+ggplot(aes(x = Endpoint)) +
+         geom_bar() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+   labs(title = "Endpoint Counts", x = "Endpoint", y = "Endpoint Count")
 ```
 
-> Answer:
+> Answer:The two most common endpoints are NOEL and LOEL which stand for No Observed Effect Limit and Lowest Observed Effect Limit
 
 ## Explore your data (Litter)
 
