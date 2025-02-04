@@ -36,12 +36,15 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 library(tidyverse)
 library(lubridate)
 library(here)
+library(gridExtra)
 
 getwd()
 
-Neonics <- read.csv(here("Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv"), stringsAsFactors = TRUE)
+Neonics <- read.csv(here("Data/Raw/ECOTOX_Neonicotinoids_Insects_raw.csv"),
+                    stringsAsFactors = TRUE)
 
-Litter <- read.csv(here("Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv"), stringsAsFactors = TRUE)
+Litter <- read.csv(here("Data/Raw/NEON_NIWO_Litter_massdata_2018-08_raw.csv"),
+                   stringsAsFactors = TRUE)
 
 ```
 
@@ -107,20 +110,23 @@ print(class(Neonics$Conc.1..Author.))
 
 ```{r}
 Neonics |>
-ggplot(aes(x = Publication.Year)) +
+  ggplot(aes(x = Publication.Year)) +
   geom_freqpoly(binwidth = 1) +  # show every year of Data
   labs(title = "Publication Frequency by Year", x = "Year", y = "Publication Count") 
-
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
 ```{r}
 Neonics |>
-ggplot(aes(x = Publication.Year, color = Test.Location)) +
+  ggplot(aes(x = Publication.Year, color = Test.Location)) +
   geom_freqpoly(binwidth = 1) +  # show every year of Data
-  labs(title = "Publication Frequency by Year", x = "Year", y = "Publication Count", color = "Testing Location")
-
+  labs(
+    title = "Publication Frequency by Year",
+    x = "Year",
+    y = "Publication Count",
+    color = "Testing Location"
+  )
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
@@ -135,8 +141,8 @@ Interpret this graph. What are the most common test locations, and do they diffe
 Neonics |>
 ggplot(aes(x = Endpoint)) +
          geom_bar() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-   labs(title = "Endpoint Counts", x = "Endpoint", y = "Endpoint Count")
+   labs(title = "Endpoint Counts", x = "Endpoint", y = "Endpoint Count") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
 
 > Answer:The two most common endpoints are NOEL and LOEL which stand for No Observed Effect Limit and Lowest Observed Effect Limit
@@ -169,22 +175,42 @@ print(length(LitterplotIDSummary))
 
 ```{r}
 Litter |>
-  ggplot(aes(x =functionalGroup)) +
+  ggplot(aes(x = functionalGroup)) +
   geom_bar() +
-     labs(title = "Count of Various Types of Litter Collected", x = "Litter Collected", y = "Count")
+  labs(title = "Count of Various Types of Litter Collected", x = "Litter Collected", y = "Count")
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
 ```{r}
+BoxplotLitter <- Litter |>
+  ggplot(aes(y = dryMass, x = functionalGroup)) +
+  geom_boxplot() +
+  labs(title = "Boxplot: Dry Mass of Litter by Litter Type", x = "Litter Type", y = "Dry Mass") +
+  theme(axis.text.x = element_text(
+    angle = 90,
+    vjust = 0.5,
+    hjust = 1
+  ))
 
+Violinplotlitter <- Litter |>
+  ggplot(aes(y = dryMass, x = functionalGroup)) +
+  geom_violin() +
+  labs(title = "Violin Plot: Dry Mass of Litter by Litter Type", x = "Litter Type", y = "Dry Mass") +
+  theme(axis.text.x = element_text(
+    angle = 90,
+    vjust = 0.5,
+    hjust = 1
+  ))
+
+grid.arrange(BoxplotLitter, Violinplotlitter, ncol = 2)
 
 ```
 
 Why is the boxplot a more effective visualization option than the violin plot in this case?
 
-> Answer:
+> Answer: Violin plots can be great because they are helpful in visualizing the shapes of distibutions. Bimodal and unimodal data look the same on a boxplot (the standard deviation and average of these datasets can be the same) but it will show up differently on a violin plot. Boxplots can be better in that they make it easier to observe outliers (like the one twigs and branches point that is definitely more than 1.5 * IQR greater than any other dray mass data point in the same litter type). The box plot also shows us where the IQR (interquartile range), average, and extreme values are which is not true for this violin plot. There is likely just not a large enough dataset to make a violin plot readable (this is like trying to picture some sort of distribution with only a small number of points. Without enough data points, I cannot reasonable tell you the difference between unimodial, biomodal, or multimodal distributions).
 
 What type(s) of litter tend to have the highest biomass at these sites?
 
-> Answer:
+> Answer: It appears that needles and mixed litter respectively are the two highest biomasses. However, the varaible spread of these dry masses (in which their quartiles overlap with eachother and even other litter types) make it hard to draw a definitive, statistically significant conclusion. If we really wanted to know, we could compute a test statistic of some kind (maybe a t-test) to determine if the avearge of these two litter types are statistically different from each other and the other classes.
