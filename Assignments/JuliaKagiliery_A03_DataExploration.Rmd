@@ -146,24 +146,32 @@ ggplot(aes(x = Endpoint)) +
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
 ```{r}
+class(Litter$collectDate) # this variable is currently a factor 
+Litter$collectDate <- as.Date(Litter$collectDate)
+class(Litter$collectDate) # now it is a date
 
-
+print(unique(Litter$collectDate)) #here are the two unique days sampled on
 ```
 
 13. Using the `unique` function, determine how many different plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
 ```{r}
+print(length(unique(Litter$plotID))) # I want to know the length of the vector which includes the unique plotIDs
 
-
+LitterplotIDSummary <- summary(Litter$plotID)
+print(LitterplotIDSummary)
+print(length(LitterplotIDSummary))
 ```
 
-> Answer:
+> Answer: unique() as a function tells me what the unique plot IDs are. It reports every value given in the plot ID column but does not tell me about the relative occurence of those IDs, just that the exist. Summary gives me both the unique ID and the number of times that ID appears in the data set. I can figure out how many unique values there are from either method, but the summary function may be more useful given that it tells me about relative occurence of each ID type. 
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
 ```{r}
-
-
+Litter |>
+  ggplot(aes(x =functionalGroup)) +
+  geom_bar() +
+     labs(title = "Count of Various Types of Litter Collected", x = "Litter Collected", y = "Count")
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
