@@ -74,9 +74,9 @@ print(dim(Neonics))
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest? [Tip: The `sort()` command is useful for listing the values in order of magnitude...]
 
 ```{r}
-NeonicsSummary <- summary(Neonics$Effect)
-NeonicsSummary <- sort(NeonicsSummary, decreasing = TRUE)
-head(NeonicsSummary)
+NeonicsSummaryEffects <- summary(Neonics$Effect)
+NeonicsSummaryEffects <- sort(NeonicsSummaryEffects, decreasing = TRUE)
+head(NeonicsSummaryEffects)
 ```
 
 > Answer: The three most common effects studied include population, mortality, and behavior. Population and mortality are by far the two most studied with 1803 and 1493 studies. These two effects are likely the most studied because population ammount (which is related to mortality) can impact the ecosystem as a whole. If the insect (as most insects are) is a part of the food chain or provide ecosystem functions (like controlling pests or polinating), then the ammount of insects around to serve these roles has implications for the entire system (whereas maybe development or behavior does not has as wide of an ecosystem impact). Furthermore, population and mortality are easy to measure (as it involves counting the number of organisms and or figuring out if they are alive) and therefore relatively easy to measure whereas other effects on development or behavior might be more complicated to study.
@@ -85,34 +85,41 @@ head(NeonicsSummary)
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: Explore the help on the `summary()` function, in particular the `maxsum` argument...]
 
 ```{r}
-
-
+NeonicsSummaryInsect <- summary(Neonics$Species.Common.Name, maxsum = 7)
+NeonicsSummaryInsect <- sort(NeonicsSummaryInsect, decreasing = TRUE)
+print(NeonicsSummaryInsect)
 ```
 
-> Answer:
+> Answer: I printed the first 7 species (the first listed species is "other" which is not a species, it is likely just a collection of odd one off species that were not coded for by ecotox). The six SPECIES most studied are the honey bee, the parasitic wasp, the buff tailed bumblebee, the carniolan honey bee, the bumble bee, and the italian honeybee. These species are all polinators which means they provide ecosystem services and are of economic importance as they contribute to agriculture yeild.  
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric? [Tip: Viewing the dataframe may be helpful...]
 
 ```{r}
-
-
+#view(Neonics)
+print(class(Neonics$Conc.1..Author.))
 ```
 
-> Answer:
+> Answer: This column is of the class factor because it includes opperators like ~, reports "NR" in some places, and it has slashes following some numbers. 
 
 ## Explore your data graphically (Neonics)
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
 ```{r}
-
+Neonics |>
+ggplot(aes(x = Publication.Year)) +
+  geom_freqpoly(binwidth = 1) +  # show every year of Data
+  labs(title = "Publication Frequency by Year", x = "Year", y = "Publication Count") 
 
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
 ```{r}
-
+Neonics |>
+ggplot(aes(x = Publication.Year, color = Test.Location)) +
+  geom_freqpoly(binwidth = 1) +  # show every year of Data
+  labs(title = "Publication Frequency by Year", x = "Year", y = "Publication Count", color = "Testing Location")
 
 ```
 
