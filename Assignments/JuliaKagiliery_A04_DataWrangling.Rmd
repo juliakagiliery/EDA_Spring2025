@@ -78,16 +78,43 @@ Yes, this is true. See based on prints that all have 20 columns but anywhere bet
 
 ```{r questions 3 thru 4}
 #3
+EPAair_O3_NC2018_processed <- EPAair_O3_NC2018_raw |>
+  mutate(Date = as.Date(Date))
 
+EPAair_O3_NC2019_processed <- EPAair_O3_NC2019_raw |>
+  mutate(Date = as.Date(Date))
+
+EPAair_PM25_NC2018_processed <- EPAair_PM25_NC2018_raw |>
+  mutate(Date = as.Date(Date))
+
+EPAair_PM25_NC2019_processed <- EPAair_PM25_NC2019_raw |>
+  mutate(Date = as.Date(Date))
 
 #4
+EPAair_O3_NC2018_processed <- EPAair_O3_NC2018_processed |>
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
+EPAair_O3_NC2019_processed <- EPAair_O3_NC2019_processed |>
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+EPAair_PM25_NC2018_processed <- EPAair_PM25_NC2018_processed |>
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+EPAair_PM25_NC2019_processed <- EPAair_PM25_NC2019_processed |>
+  select(Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
 #5
+EPAair_PM25_NC2018_processed <- EPAair_PM25_NC2018_processed |>
+  mutate(AQS_PARAMETER_DESC = "PM2.5")
 
+EPAair_PM25_NC2019_processed <- EPAair_PM25_NC2019_processed |>
+  mutate(AQS_PARAMETER_DESC = "PM2.5")
 
 #6
-
+write_csv(EPAair_O3_NC2018_processed, here("Data/Processed/EPAair_O3_NC2018_processed.csv"))
+write_csv(EPAair_O3_NC2019_processed, here("Data/Processed/EPAair_O3_NC2019_processed.csv"))
+write_csv(EPAair_PM25_NC2018_processed, here("Data/Processed/EPAair_PM25_NC2018_processed.csv"))
+write_csv(EPAair_PM25_NC2019_processed, here("Data/Processed/EPAair_PM25_NC2019_processed.csv"))
 ```
 
 
