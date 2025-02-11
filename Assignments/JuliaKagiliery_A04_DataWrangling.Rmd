@@ -115,8 +115,9 @@ write_csv(EPAair_O3_NC2018_processed, here("Data/Processed/EPAair_O3_NC2018_proc
 write_csv(EPAair_O3_NC2019_processed, here("Data/Processed/EPAair_O3_NC2019_processed.csv"))
 write_csv(EPAair_PM25_NC2018_processed, here("Data/Processed/EPAair_PM25_NC2018_processed.csv"))
 write_csv(EPAair_PM25_NC2019_processed, here("Data/Processed/EPAair_PM25_NC2019_processed.csv"))
-```
 
+view(EPAair_PM25_NC2019_processed)
+```
 
 ## Combine datasets
 
@@ -147,13 +148,47 @@ write_csv(EPAair_PM25_NC2019_processed, here("Data/Processed/EPAair_PM25_NC2019_
 
 ```{r questions 7 thru 11}
 #7 
-
+AirQualityO3PMNC <- rbind(EPAair_O3_NC2018_processed, EPAair_O3_NC2019_processed, EPAair_PM25_NC2018_processed, EPAair_PM25_NC2019_processed)
 
 #8 
+common_sites <- Reduce(intersect, list(
+  EPAair_O3_NC2018_processed$Site.Name,
+  EPAair_O3_NC2019_processed$Site.Name,
+  EPAair_PM25_NC2018_processed$Site.Name,
+  EPAair_PM25_NC2019_processed$Site.Name
+))
 
+AirQualityO3PMNC <- AirQualityO3PMNC |>
+  filter(Site.Name %in% common_sites) 
+
+# 8: Group by relevant columns and compute daily means
+AirQualityO3PMNC <- AirQualityO3PMNC %>%
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
+  summarise(
+    DAILY_AQI_VALUE = mean(DAILY_AQI_VALUE, na.rm = TRUE),
+    SITE_LONGITUDE = mean(SITE_LONGITUDE, na.rm = TRUE), 
+    SITE_LATITUDE = mean(SITE_LATITUDE, na.rm = TRUE), 
+    .groups = "drop"
+  ) 
+
+AirQualityO3PMNC <- AirQualityO3PMNC %>%
+  mutate(
+    Year = year(Date),
+    Month = month(Date)
+  )
+
+dim(AirQualityO3PMNC)
+
+View(AirQualityO3PMNC)
 
 #9
+AirQualityO3PMNCWider <- AirQualityO3PMNC |>
+   pivot_wider(
+    names_from = AQS_PARAMETER_DESC,  # Column that will become new column names
+    values_from = DAILY_AQI_VALUE # Column with values to spread
+  )
 
+View(AirQualityO3PMNCWider)
 
 #10
 
