@@ -115,8 +115,6 @@ write_csv(EPAair_O3_NC2018_processed, here("Data/Processed/EPAair_O3_NC2018_proc
 write_csv(EPAair_O3_NC2019_processed, here("Data/Processed/EPAair_O3_NC2019_processed.csv"))
 write_csv(EPAair_PM25_NC2018_processed, here("Data/Processed/EPAair_PM25_NC2018_processed.csv"))
 write_csv(EPAair_PM25_NC2019_processed, here("Data/Processed/EPAair_PM25_NC2019_processed.csv"))
-
-view(EPAair_PM25_NC2019_processed)
 ```
 
 ## Combine datasets
@@ -179,8 +177,6 @@ AirQualityO3PMNC <- AirQualityO3PMNC %>%
 
 dim(AirQualityO3PMNC)
 
-View(AirQualityO3PMNC)
-
 #9
 AirQualityO3PMNCWider <- AirQualityO3PMNC |>
    pivot_wider(
@@ -188,13 +184,13 @@ AirQualityO3PMNCWider <- AirQualityO3PMNC |>
     values_from = DAILY_AQI_VALUE # Column with values to spread
   )
 
-View(AirQualityO3PMNCWider)
 
 #10
-
+print(dim(AirQualityO3PMNCWider))
 
 #11
 
+write_csv(AirQualityO3PMNCWider, here("Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv"))
 
 ```
 
@@ -208,15 +204,21 @@ View(AirQualityO3PMNCWider)
 ```{r questions 12 and 13}
 
 #12
-
+AirQualityO3PMNCWiderSummary <- AirQualityO3PMNCWider |>
+  drop_na(Ozone) |>
+  group_by(Date, Site.Name, Year) |>
+  summarise(
+    meanPM2.5 = mean(PM2.5), 
+    meanozone = mean(Ozone)
+    ) 
 
 #13
 
-
+dim(AirQualityO3PMNCWiderSummary)
 
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`? Hint: replace `drop_na` with `na.omit` in part 12 and observe what happens with the dimensions of the summary date frame.
 
-> Answer: 
+> Answer: na.omit will remove the whole column when there is an NA value present (so we lose the whole ozone column) but drop_na only removes rows (not columns) where we have an NA value which lets us mainitain a column full of the actual ozone values. 
 
