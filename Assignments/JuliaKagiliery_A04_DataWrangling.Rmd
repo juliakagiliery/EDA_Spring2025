@@ -79,16 +79,16 @@ Yes, this is true. See based on prints that all have 20 columns but anywhere bet
 ```{r questions 3 thru 4}
 #3
 EPAair_O3_NC2018_processed <- EPAair_O3_NC2018_raw |>
-  mutate(Date = as.Date(Date))
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y"))
 
 EPAair_O3_NC2019_processed <- EPAair_O3_NC2019_raw |>
-  mutate(Date = as.Date(Date))
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y"))
 
 EPAair_PM25_NC2018_processed <- EPAair_PM25_NC2018_raw |>
-  mutate(Date = as.Date(Date))
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y"))
 
 EPAair_PM25_NC2019_processed <- EPAair_PM25_NC2019_raw |>
-  mutate(Date = as.Date(Date))
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y"))
 
 #4
 EPAair_O3_NC2018_processed <- EPAair_O3_NC2018_processed |>
@@ -115,7 +115,10 @@ write_csv(EPAair_O3_NC2018_processed, here("Data/Processed/EPAair_O3_NC2018_proc
 write_csv(EPAair_O3_NC2019_processed, here("Data/Processed/EPAair_O3_NC2019_processed.csv"))
 write_csv(EPAair_PM25_NC2018_processed, here("Data/Processed/EPAair_PM25_NC2018_processed.csv"))
 write_csv(EPAair_PM25_NC2019_processed, here("Data/Processed/EPAair_PM25_NC2019_processed.csv"))
+
+#I checked the dimensions of all my processed data sets and I get the same dimensions as above (9737, 10592, 8983, and 8581)
 ```
+
 
 ## Combine datasets
 
@@ -148,42 +151,50 @@ write_csv(EPAair_PM25_NC2019_processed, here("Data/Processed/EPAair_PM25_NC2019_
 #7 
 AirQualityO3PMNC <- rbind(EPAair_O3_NC2018_processed, EPAair_O3_NC2019_processed, EPAair_PM25_NC2018_processed, EPAair_PM25_NC2019_processed)
 
+print(dim(AirQualityO3PMNC)) # per Dr. Fay's advice, this should be 37,893 x 7 which I do have.
+
 #8 
-common_sites <- Reduce(intersect, list(
-  EPAair_O3_NC2018_processed$Site.Name,
-  EPAair_O3_NC2019_processed$Site.Name,
-  EPAair_PM25_NC2018_processed$Site.Name,
-  EPAair_PM25_NC2019_processed$Site.Name
-))
+common_sites <- Reduce(
+  intersect,
+  list(
+    EPAair_O3_NC2018_processed$Site.Name,
+    EPAair_O3_NC2019_processed$Site.Name,
+    EPAair_PM25_NC2018_processed$Site.Name,
+    EPAair_PM25_NC2019_processed$Site.Name
+  )
+)
+
+common_sites <- common_sites[common_sites != ""]
+print(common_sites)
 
 AirQualityO3PMNC <- AirQualityO3PMNC |>
   filter(Site.Name %in% common_sites) 
 
-# 8: Group by relevant columns and compute daily means
+print(dim(AirQualityO3PMNC)) # per Dr. Fay, this should be 16,510 observations in 7 columns which I have.
+
 AirQualityO3PMNC <- AirQualityO3PMNC %>%
   group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
   summarise(
-    DAILY_AQI_VALUE = mean(DAILY_AQI_VALUE, na.rm = TRUE),
-    SITE_LONGITUDE = mean(SITE_LONGITUDE, na.rm = TRUE), 
-    SITE_LATITUDE = mean(SITE_LATITUDE, na.rm = TRUE), 
+    MEAN_DAILY_AQI_VALUE = mean(DAILY_AQI_VALUE, na.rm = TRUE),
+    MEAN_SITE_LONGITUDE = mean(SITE_LONGITUDE, na.rm = TRUE),
+    MEAN_SITE_LATITUDE = mean(SITE_LATITUDE, na.rm = TRUE),
     .groups = "drop"
-  ) 
+  )
 
-AirQualityO3PMNC <- AirQualityO3PMNC %>%
+AirQualityO3PMNC <- AirQualityO3PMNC |>
   mutate(
     Year = year(Date),
     Month = month(Date)
   )
 
-dim(AirQualityO3PMNC)
-
+print(dim(AirQualityO3PMNC)) # per the instructions, this should be 14,752 x 9, correct!
+  
 #9
 AirQualityO3PMNCWider <- AirQualityO3PMNC |>
    pivot_wider(
     names_from = AQS_PARAMETER_DESC,  # Column that will become new column names
-    values_from = DAILY_AQI_VALUE # Column with values to spread
+    values_from = MEAN_DAILY_AQI_VALUE # Column with values to spread
   )
-
 
 #10
 print(dim(AirQualityO3PMNCWider))
@@ -209,7 +220,8 @@ AirQualityO3PMNCWiderSummary <- AirQualityO3PMNCWider |>
   group_by(Date, Site.Name, Year) |>
   summarise(
     meanPM2.5 = mean(PM2.5), 
-    meanozone = mean(Ozone)
+    meanozone = mean(Ozone),
+            .groups = "drop"
     ) 
 
 #13
