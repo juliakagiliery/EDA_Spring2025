@@ -154,6 +154,7 @@ AirQualityO3PMNC <- rbind(EPAair_O3_NC2018_processed, EPAair_O3_NC2019_processed
 print(dim(AirQualityO3PMNC)) # per Dr. Fay's advice, this should be 37,893 x 7 which I do have.
 
 #8 
+#the below code finds where the 4 data sets have common sites then I manually exclude blanks (this is great bc if these data sets are ever updates and have more common sites, my code will recognize this and update the number of sites)
 common_sites <- Reduce(
   intersect,
   list(
@@ -162,18 +163,18 @@ common_sites <- Reduce(
     EPAair_PM25_NC2018_processed$Site.Name,
     EPAair_PM25_NC2019_processed$Site.Name
   )
-)
+) 
 
 common_sites <- common_sites[common_sites != ""]
-print(common_sites)
+print(common_sites) #just want to make sure this works and it did!
 
 AirQualityO3PMNC <- AirQualityO3PMNC |>
-  filter(Site.Name %in% common_sites) 
+  filter(Site.Name %in% common_sites) #keeping only sites in common
 
 print(dim(AirQualityO3PMNC)) # per Dr. Fay, this should be 16,510 observations in 7 columns which I have.
 
-AirQualityO3PMNC <- AirQualityO3PMNC %>%
-  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
+AirQualityO3PMNC <- AirQualityO3PMNC |> #creating the summary sites with AQI, longitude, and latitude means
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) |>
   summarise(
     MEAN_DAILY_AQI_VALUE = mean(DAILY_AQI_VALUE, na.rm = TRUE),
     MEAN_SITE_LONGITUDE = mean(SITE_LONGITUDE, na.rm = TRUE),
@@ -181,7 +182,7 @@ AirQualityO3PMNC <- AirQualityO3PMNC %>%
     .groups = "drop"
   )
 
-AirQualityO3PMNC <- AirQualityO3PMNC |>
+AirQualityO3PMNC <- AirQualityO3PMNC |> # add the two new rows requested, year and month (need proper formate of Date column which we did in question 3)
   mutate(
     Year = year(Date),
     Month = month(Date)
@@ -190,18 +191,17 @@ AirQualityO3PMNC <- AirQualityO3PMNC |>
 print(dim(AirQualityO3PMNC)) # per the instructions, this should be 14,752 x 9, correct!
   
 #9
-AirQualityO3PMNCWider <- AirQualityO3PMNC |>
+AirQualityO3PMNCWider <- AirQualityO3PMNC |> #now have columns for ozone and PM so the row shows both values 
    pivot_wider(
-    names_from = AQS_PARAMETER_DESC,  # Column that will become new column names
-    values_from = MEAN_DAILY_AQI_VALUE # Column with values to spread
+    names_from = AQS_PARAMETER_DESC,  # Column that will become new column names #name of my new columns (# of new columns = # of unique values in this column)
+    values_from = MEAN_DAILY_AQI_VALUE # Column that fills in the new columns
   )
 
 #10
 print(dim(AirQualityO3PMNCWider))
 
 #11
-
-write_csv(AirQualityO3PMNCWider, here("Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv"))
+write_csv(AirQualityO3PMNCWider, here("Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv")) # save the new file
 
 ```
 
@@ -215,19 +215,17 @@ write_csv(AirQualityO3PMNCWider, here("Data/Processed/EPAair_O3_PM25_NC1819_Proc
 ```{r questions 12 and 13}
 
 #12
-AirQualityO3PMNCWiderSummary <- AirQualityO3PMNCWider |>
-  drop_na(Ozone) |>
-  group_by(Date, Site.Name, Year) |>
+AirQualityO3PMNCWiderSummary <- AirQualityO3PMNCWider |> #new columns are mean PM2.5 and mean ozone (as well as the group by columns)
+  group_by(Site.Name, Month, Year) |>
   summarise(
     meanPM2.5 = mean(PM2.5), 
     meanozone = mean(Ozone),
             .groups = "drop"
-    ) 
+    ) |>
+  drop_na(meanozone) #drop NA mean ozone but we will still have NA PM 2.5 
 
 #13
-
-dim(AirQualityO3PMNCWiderSummary)
-
+print(dim(AirQualityO3PMNCWiderSummary))
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`? Hint: replace `drop_na` with `na.omit` in part 12 and observe what happens with the dimensions of the summary date frame.
