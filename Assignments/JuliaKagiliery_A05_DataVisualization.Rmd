@@ -38,9 +38,20 @@ library(cowplot)
 
 print(getwd())
 
+NTL_LTER_Lake_Chemistry <- read.csv(here("Data/Processed/Processed_KEY/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"), stringsAsFactors = TRUE)
 
+NEON_NIWO_Litter <- read.csv(here("Data/Processed/Processed_KEY/NEON_NIWO_Litter_mass_trap_Processed.csv"), stringsAsFactors = TRUE)
 
 #2 
+
+NEON_NIWO_Litter <- NEON_NIWO_Litter |> 
+  mutate(collectDate = ymd(collectDate))
+
+NTL_LTER_Lake_Chemistry <- NTL_LTER_Lake_Chemistry |> 
+  mutate(sampledate = ymd(sampledate))
+
+typeof(NTL_LTER_Lake_Chemistry$sampledate)
+typeof(NEON_NIWO_Litter$collectDate)
 
 ```
 ## Define your theme
