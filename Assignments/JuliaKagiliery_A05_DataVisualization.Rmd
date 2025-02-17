@@ -32,6 +32,13 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Vi
 
 ```{r initialize project}
 #1 
+library(tidyverse)
+library(here)
+library(cowplot)
+
+print(getwd())
+
+
 
 #2 
 
