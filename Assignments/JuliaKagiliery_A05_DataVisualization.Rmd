@@ -44,14 +44,14 @@ NEON_NIWO_Litter <- read.csv(here("Data/Processed/Processed_KEY/NEON_NIWO_Litter
 
 #2 
 
-NEON_NIWO_Litter <- NEON_NIWO_Litter |> 
+NEON_NIWO_Litter <- NEON_NIWO_Litter |> #make dates be read as dates
   mutate(collectDate = ymd(collectDate))
 
 NTL_LTER_Lake_Chemistry <- NTL_LTER_Lake_Chemistry |> 
   mutate(sampledate = ymd(sampledate))
 
-typeof(NTL_LTER_Lake_Chemistry$sampledate)
-typeof(NEON_NIWO_Litter$collectDate)
+class(NTL_LTER_Lake_Chemistry$sampledate) #confirm date works
+class(NEON_NIWO_Litter$collectDate)
 
 ```
 ## Define your theme
@@ -71,38 +71,35 @@ library(RColorBrewer)
 library(colormap)
 library(ggthemes)
 
-
-pink_palette <- c("#FFC0CB", "#FF69B4", "#FF1493", "#DB7093", "#C71585")  # Light to dark pink shades
-
+#I want a barbie theme, all different texts are various colors of pink or grey, messed with size and line width too
 pink_theme <- theme_base() +
   theme(
     line = element_line(color = 'hotpink', linewidth = 1.5),
-    legend.title = element_text(color = 'deeppink', face = "italic"), 
-    legend.text = element_text(color = 'darkgrey'),  # Grey legend text
+    legend.title = element_text(color = 'deeppink', face = "italic"),
+    legend.text = element_text(color = 'darkgrey'),
     plot.background = element_rect(color = 'pink'),
     panel.grid.major = element_line(color = 'lightpink', linewidth = .5),
     panel.grid.minor = element_line(color = 'lightpink', linewidth = 0.25),
     axis.title.x = element_text(color = 'deeppink', size = 14),
     axis.title.y = element_text(color = 'deeppink', size = 14),
-    plot.title = element_text(color = 'deeppink', size = 16, face = "bold"),
-    axis.text.x = element_text(color = 'darkgrey'),  # Grey axis tick labels (x-axis)
-    axis.text.y = element_text(color = 'darkgrey'),  # Grey axis tick labels (y-axis)
-    strip.text = element_text(color = 'darkgrey'),  # Grey facet labels (if any)
-    plot.subtitle = element_text(color = 'darkgrey'),  # Grey subtitle (if any)
-    plot.caption = element_text(color = 'darkgrey')  # Grey caption (if any)
+    plot.title = element_text(
+      color = 'deeppink',
+      face = "bold"
+    ),
+    axis.text.x = element_text(color = 'darkgrey'),
+    axis.text.y = element_text(color = 'darkgrey'),
+    strip.text = element_text(color = 'darkgrey'),
   )
 
-# Set default theme
+# default 
 theme_set(pink_theme)
 
+#could not figure out how to add this above but this function just means that when I use colors to indicate groupings like in scatter plots, they will always be pinks if I call this function
+pink_palette <- c("#FFC0CB", "#FF69B4", "#FF1493", "#DB7093", "#C71585")
 
-theme_set(pink_theme)
-
-#could not fugure out how to add this above but this function just means that when I use colors to indicate groupings, they will be pink
 scale_color_pink <- function() {
   scale_color_manual(values = pink_palette)
 }
-
 
 ```
 
@@ -114,24 +111,22 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 ```{r plot total P vs PO4}
 #4 
 NTL_LTER_Lake_Chemistry |>
-  ggplot(aes(x = tp_ug, y = po4, color = as.factor(lakename))) + 
+  ggplot(aes(
+    x = tp_ug, #phosporous 
+    y = po4, #phosphate
+    color = as.factor(lakename) #this is what creates a legend because it gives the colors meaning
+  )) +
   geom_point() +
-    scale_color_pink() +
-  ylim(0,50) +
+  scale_color_pink() + #make the scatter plots pink
+  ylim(0, 50) +
   labs(
     x = "Total Phosphorus (ug)",
     y = "Phosphate (ug)",
     color = "Lake Name",
     title = "Phosphorus v. Phospahte Levels at Various Lakes"
   ) +
-  geom_smooth(
-    method = lm, 
-    se = FALSE
-  )
-
-
+  geom_smooth(method = lm, se = FALSE)
 ```
-
 
 5. [NTL-LTER] Make three separate boxplots of (a) temperature, (b) TP, and (c) TN, with month as the x axis and lake as a color aesthetic. Then, create a cowplot that combines the three graphs. Make sure that only one legend is present and that graph axes are aligned. 
 
@@ -142,22 +137,30 @@ Tips:
 * Individual plots can have different sizes when combined using `cowplot`.
 
 ```{r Create boxplots}
-#5 
+#5
 TempPlot <- NTL_LTER_Lake_Chemistry |>
   ggplot(aes(y = temperature_C, color = as.factor(lakename))) +
-  geom_boxplot(aes(x = factor(month, levels = 1:12, labels = month.abb)), fill = "lightgray", size = 1.5) +  # Fix the factor conversion for month
+  geom_boxplot(aes(x = factor(
+    month, levels = 1:12, labels = month.abb #this is what tunrs it from 1 to Jan
+  )), fill = "lightgray", size = 1) +  # fill in the bars bc it is easier to read in the pink hell i created
   scale_color_pink() +
   labs(
-    x = element_blank(),
+    x = element_blank(), # only want one x label
     y = "Temperature (°C)",
     color = "Lake Name",
     title = "Temperature Through the Year"
-  )+
-  theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
+  ) +
+  theme(legend.position = "none", # only want one legend
+        plot.title = element_text(size = 10),   # I had to pess with these because it rendered weird in the PDF. smaller size made it better
+        axis.title.y = element_text(size = 8)   
+  )
 
+#same as above
 PhosPlot <- NTL_LTER_Lake_Chemistry |>
   ggplot(aes(y = tp_ug, color = as.factor(lakename))) +
-  geom_boxplot(aes(x = factor(month, levels = 1:12, labels = month.abb)), fill = "lightgray", size = 1.5) +  # Fix the factor conversion for month
+  geom_boxplot(aes(x = factor(
+    month, levels = 1:12, labels = month.abb
+  )), fill = "lightgray", size = 1) +  
   scale_color_pink() +
   labs(
     x = element_blank(),
@@ -165,11 +168,17 @@ PhosPlot <- NTL_LTER_Lake_Chemistry |>
     color = "Lake Name",
     title = "Total Phosphorus Through the Year"
   ) +
-  theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "right",
+        plot.title = element_text(size = 10),   
+        axis.title.y = element_text(size = 8)   
+  )
 
+#same as above
 NitrogenPlot <- NTL_LTER_Lake_Chemistry |>
   ggplot(aes(y = tn_ug, color = as.factor(lakename))) +
-  geom_boxplot(aes(x = factor(month, levels = 1:12, labels = month.abb)), fill = "lightgray", size = 1.5) +  # Fix the factor conversion for month
+  geom_boxplot(aes(x = factor(
+    month, levels = 1:12, labels = month.abb
+  )), fill = "lightgray", size = 1) +  
   scale_color_pink() +
   labs(
     x = "Month",
@@ -177,18 +186,20 @@ NitrogenPlot <- NTL_LTER_Lake_Chemistry |>
     color = "Lake Name",
     title = "Total Nitrogen Through the Year"
   ) +
-    theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5))
+  theme(legend.position = "none", 
+        plot.title = element_text(size = 10),   
+        axis.title.y = element_text(size = 8)   
+  )
 
-
-plot_grid(TempPlot, PhosPlot, NitrogenPlot, nrow = 3,  align = "h", axis = "b")
+# three plots, stacked and cenntered 
+plot_grid(TempPlot, PhosPlot, NitrogenPlot, 
+          ncol = 1, nrow = 3, align = 'v')
 
 ```
 
-
-
 Question: What do you observe about the variables of interest over seasons and between lakes? 
 
-> Answer: 
+> Answer: These variables all seem to be seasonal such that they peak in the summer (in higher temepratures) and are lower in the fall and spring. There is no data in the winter. Further more, the temperature is very similar between lakes but the total phosphourus and nitrogen seem higher (or at least more variable) in Peter Lake than Paul Lake.
 
 6. [Niwot Ridge] Plot a subset of the litter dataset by displaying only the "Needles" functional group. Plot the dry mass of needle litter by date and separate by NLCD class with a color aesthetic. (no need to adjust the name of each land use)
 
@@ -196,12 +207,49 @@ Question: What do you observe about the variables of interest over seasons and b
 
 ```{r Plot litter}
 #6
+NEON_NIWO_LitterNeddles <- NEON_NIWO_Litter |>
+  filter(functionalGroup == "Needles") #needles only per instructions 
 
+NEON_NIWO_LitterNeddles |>
+  ggplot(aes(
+    y = dryMass,
+    x = as.factor(collectDate),
+    color = nlcdClass
+  )) +
+  scale_color_pink() +
+  geom_point(size = 2.5) +
+    scale_x_discrete(breaks = function(x) x[seq(1, length(x), by = 3)]) + #label every 3rd date to make it less cluttered
+  labs(
+    x = "Date",
+    y = "Dry Mass of Needles",
+    color = "Land Use Type",
+    title = "Dry Mass of Needles Through Time"
+  ) +
+  theme(
+    axis.text.x = element_text( #couldn't read it in the render, make it smaller and rotate it
+      angle = 90,
+      vjust = 0.5,
+      hjust = 0.5
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
 
 #7
-
-
+NEON_NIWO_LitterNeddles |>
+  ggplot(aes(y = dryMass, x = as.factor(collectDate))) +
+  geom_point(color = "darkgrey", size = 2.5) +
+  facet_wrap( ~ nlcdClass) +
+  labs(x = "Date", y = "Dry Mass of Needles", title = "Dry Mass of Needles Through Time By Land Use Type") +
+  scale_x_discrete(breaks = function(x) x[seq(1, length(x), by = 3)]) + #label every 3rd date to make it less cluttered
+  theme(
+    axis.text.x = element_text(
+      angle = 90,
+      vjust = 0.5,
+      hjust = 0.5
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
 ```
 Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
 
-> Answer:
+> Answer: I think plot 7 is more effective/ There are so many points, that faceting by land use type allows for you to more acurately see trends in the data without having to process the color differences in plot 6. The frequency of somapling and number of points is pretty high, I do think that the plots could certainly be made more clear by condensive that data (such as reporting the mean for each day rather than every value) or generating a box plot.Furthermore, We could adjust the number of time periods reported (maybe take the average of two months which would have the number of observations).
