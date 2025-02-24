@@ -3,7 +3,13 @@ title: 'A06 - Crafting Reports'
 author: "Julia Kagiliery" 
 date: "Spring 2025"
 output: pdf_document
+toc: TRUE
 ---
+\listoffigures
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = T, warning = F)
+```
 
 ## Objectives:
 
@@ -47,10 +53,10 @@ library(here)
 library(knitr)
 
 #Import EPA data (from the processed_KEY folder) & fix dates
-epa_data <- read.csv(
-  here("Data","Processed_KEY","EPAair_O3_PM25_NC1819_Processed.csv"),
-  stringsAsFactors = TRUE) %>% 
-  mutate(Date = ymd(Date))
+#epa_data <- read.csv(
+ # here("Data","Processed_KEY","EPAair_O3_PM25_NC1819_Processed.csv"),
+  #stringsAsFactors = TRUE) %>% 
+  #mutate(Date = ymd(Date))
 ```
 
 ---
@@ -74,19 +80,19 @@ Customize the chunk options such that the code is run but is not displayed in th
 
 ```{r data.summary}
 #Compute mean PM2.5 concentration for each county, sorted by value
-summary_PM25 <- epa_data %>% 
-  drop_na(PM2.5) %>% 
-  group_by(COUNTY) %>% 
-  summarize(mean_PM2.5 = mean(PM2.5)) %>% 
-  arrange(mean_PM2.5)
+#summary_PM25 <- epa_data %>% 
+ # drop_na(PM2.5) %>% 
+  #group_by(COUNTY) %>% 
+  #summarize(mean_PM2.5 = mean(PM2.5)) %>% 
+  #arrange(mean_PM2.5)
 
 #Compute mean ozone concentration for each county, sorted by value
-summary_Ozone <- epa_data %>% 
-  drop_na(Ozone) %>% 
-  group_by(COUNTY) %>% 
-  summarize(
-    mean_Ozone = mean(Ozone)) %>% 
-  arrange(mean_Ozone)
+#summary_Ozone <- epa_data %>% 
+ # drop_na(Ozone) %>% 
+  #group_by(COUNTY) %>% 
+ # summarize(
+ #   mean_Ozone = mean(Ozone)) %>% 
+ # arrange(mean_Ozone)
 
 #Use the `kable` function to produce the 2 tables in markdown format
 
