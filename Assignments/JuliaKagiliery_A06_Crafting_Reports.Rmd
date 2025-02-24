@@ -8,8 +8,6 @@ toc: TRUE
 
 \listoffigures
 
-\listoftables
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(warning = F) #says do not show warnings in this doccument
 ```
@@ -58,8 +56,6 @@ library(tidyverse)
 library(lubridate)
 library(here)
 library(knitr)
-
-getwd()
 
 #Import EPA data (from the processed_KEY folder) & fix dates
 epa_data <- read.csv(
@@ -117,6 +113,35 @@ Below this paragraph, but above the horizonal line (`---`), create two separate 
 
 ------------------------------------------------------------------------
 
+
+\newpage
+
+```{r, fig.cap="Ozone Plotted Monthly for 2018", fig.align='left', fig.width=7, fig.height=3,  echo=FALSE, message=FALSE}
+epa_data |>
+  filter(Year == 2018) |>
+  ggplot(aes(y = Ozone, x = factor(Month, levels = 1:12, labels = month.abb))) +  
+  geom_boxplot() +
+  labs(
+    x = "Month",
+    y= expression(Concentration~(mu*g/m^3)), 
+    title = "Monthly Ozone Concentration (2018)"
+  )
+```
+
+```{r, fig.cap="Ozone Plotted Monthly for 2019", , fig.align='left', fig.width=7, fig.height=3,  echo=FALSE, message=FALSE}
+epa_data |>
+  filter(Year == 2019) |>
+  ggplot(aes(y = Ozone, x = factor(Month, levels = 1:12, labels = month.abb))) +  
+  geom_boxplot() +
+  labs(
+    x = "Month",
+    y= expression(Concentration~(mu*g/m^3)), 
+    title = "Monthly Ozone Concentration (2019)"
+  )
+```
+
+------------------------------------------------------------------------
+
 \newpage
 
 ## Task 5: Knit and submit.
@@ -124,3 +149,6 @@ Below this paragraph, but above the horizonal line (`---`), create two separate 
 Add a table of contents and list of figures to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository.
 
 ## Git Repository
+
+Find my github \href{https://github.com/juliakagiliery/EDA_Spring2025}{\textcolor{blue}{\underline{here}}}
+
