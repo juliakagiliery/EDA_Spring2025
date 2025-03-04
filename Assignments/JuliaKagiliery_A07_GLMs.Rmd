@@ -165,16 +165,18 @@ print(summary(TempDepthModelMultiReg))
 
 ```{r anova.model}
 #12
-LakeDiffernceAnova<-aov(temperature_C~ lakename, data=LakeChemistryClean)
-print(summary(LakeDiffernceAnova))
 
 LakeDiffernceLinear<-lm(temperature_C~ lakename, data=LakeChemistryClean)
 print(summary(LakeDiffernceLinear))
+
+LakeDiffernceAnova<-aov(temperature_C~ lakename, data=LakeChemistryClean)
+print(summary(LakeDiffernceAnova))
+
 ```
 
 13. Is there a significant difference in mean temperature among the lakes? Report your findings. 
 
-> Answer: 
+> Answer: For the linear models, we see that eacvh lake name has a statistcially significant coeffficent (P value less than 0.05) which suggests that the lakes all have different equations.  For the ANOVA test, the F-value (which discusses inter v intra lake varaitions) of 50 with 8 degrees of freedom and a p-value under 0.05 provides  evidence to reject the null hypothesis and say that the mean temperatures of the lakes are different.
 
 
 
@@ -222,13 +224,13 @@ TukeyHSD(LakeDiffernceAnova)
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer:
+>Answer:Statistcially, Peter Lake, Paul Lake (p = 0.224), and Ward lake (P=0.783) all have the same mean. No lake has a mean temp statitsically different from all other lakes, 
 
  
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 
+>Answer: Two-sample T test would work.
 
 
 
@@ -243,4 +245,4 @@ print(TTestCLWL)
 
 ```
 
->Answer: 
+>Answer: We can't reject the null the null hypthesis because our p value is not less than 0.05. Furthermore, our 95% confidence interval includes 0 so we cannot be sure that the difference between the means is not = 0. This is somewhat aligned with my answer to 16 which reports the difference between the two lakes as -0.89 but this difference is not signficant!
