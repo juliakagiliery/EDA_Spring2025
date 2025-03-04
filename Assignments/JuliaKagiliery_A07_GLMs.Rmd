@@ -79,8 +79,8 @@ Our first research question is: Does mean lake temperature recorded during July 
 
 3. State the null and alternative hypotheses for this question:
 > Answer:
-H0: 
-Ha: 
+H0: The mean lake temeprature in July does not change with depth across all lakes. 
+Ha: The mean lake temeprature in July does change with depth across all lakes. 
 
 
 4.  Wrangle your NTL-LTER dataset with a pipe function so that the records meet the following criteria: 
@@ -115,7 +115,7 @@ label= "Temperature = -1.94621(Depth) + 21.95597 ", size=5, color ="lightpink") 
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: 
+> Answer: There appears to be a inverse relationship between lake depth and temperature such that increasing depth of the lake has a lower temperature. Given that residuals are all possitive past 10 meters (but our residual values seem to be more negative around 5 meters), I question the validity of a linear model. The possible excessive positive residuals would skew the distribution to the right. Residuals should appear random in a well fit model, but our errors seem to follow a patern (i.e. they may not be normally disttibuted)  and hence I imagine that maybe a logirithmic model might fit better. However, it can be hard to tell this via visual inspection and we should turn to quantitative measuremets and a better analysis of residuals. 
 
 
 7. Perform a linear regression to test the relationship and display the results.
@@ -129,7 +129,7 @@ print(summary(TempDepthModel))
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:
+> Answer: The R squared value is 0.7387 for this model so  around 74% of change in temeprature can be explainned by a chnage in depth. Given a P value less than, 0.05, we can say that this is a statistically significat model on 9,726 degrees of freedom. From this, for each meter of depth, we expect that that the temeprature will decrease by a factor of around 1.95 degrees. We expect the surface temperture (depth = 0) to be around 22 degrees C.
 
 
 ---
@@ -155,8 +155,7 @@ print(summary(TempDepthModelMultiReg))
 
 11. What is the final set of explanatory variables that the AIC method suggests we use to predict temperature in our multiple regression? How much of the observed variance does this model explain? Is this an improvement over the model using only depth as the explanatory variable?
 
-> Answer: 
-
+> Answer: We use all the explanatory variables tested in the model and manage to explain just over 74% of variability in temeprature which is only marginally better than just using depth. Though this is a better model, it is not much better so we should ask if collecting and storing additional data is even worth is for such minor imporvement (should we pay someone to record the date at these lakes for a difference of around 0.4% more explanaituon?)
 
 
 ---
