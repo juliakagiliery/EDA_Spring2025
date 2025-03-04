@@ -6,7 +6,10 @@ output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
   chunk_output_type: console
+toc: TRUE
 ---
+
+\listoffigures
 
 ## OVERVIEW
 
@@ -87,7 +90,7 @@ Ha:
 
 5. Visualize the relationship among the two continuous variables with a scatter plot of temperature by depth. Add a smoothed line showing the linear model, and limit temperature values from 0 to 35 °C. Make this plot look pretty and easy to read.
 
-```{r scatterplot}
+```{r scatterplot, fig.cap='Scatter plot of Temperature of Lakes At Various Depths'}
 #4
 LakeChemistryClean <- LakeChemistry |>
   filter(month(sampledate) == 7) |>
@@ -100,7 +103,7 @@ LakeChemistryClean |>
   geom_point(color = "navy") +
   geom_smooth(method = "lm", color = "lightpink") +
   labs(
-    title = "Temperature of Lakes \n At Various Depths",
+    title = "Temperature of Lakes At Various Depths",
     x = "Depth of Lake (m)",
     y = expression(Temperature~(degree*C))
   ) +
@@ -141,11 +144,12 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r temperature.model}
 #9
-
-
+TempDepthModelAIC <- lm(temperature_C~ year4 + daynum + depth, data = LakeChemistryClean)
+step(TempDepthModelAIC)
 
 #10
-
+TempDepthModelMultiReg <- lm(temperature_C~ year4 + daynum + depth, data = LakeChemistryClean)
+print(summary(TempDepthModelMultiReg))
 
 ```
 
@@ -162,8 +166,11 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 ```{r anova.model}
 #12
+LakeDiffernceAnova<-aov(temperature_C~ lakename, data=LakeChemistryClean)
+print(summary(LakeDiffernceAnova))
 
-
+LakeDiffernceLinear<-lm(temperature_C~ lakename, data=LakeChemistryClean)
+print(summary(LakeDiffernceLinear))
 ```
 
 13. Is there a significant difference in mean temperature among the lakes? Report your findings. 
@@ -174,17 +181,43 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 
 14. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
-```{r scatterplot.2}
+```{r scatterplot.2, , fig.cap='Temperature of Lakes At Various Depths by Lake'}
 #14.
-
-
+LakeChemistryClean |>
+  ggplot(aes(x = depth, y=temperature_C, color = lakename))+
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Relationship Between Lake Depth and Temperature",
+    x = "Depth of Lake (m)",
+    y = expression(Temperature~(degree*C)), 
+  ) + 
+  ylim(0,35) +
+scale_color_viridis_d(option = "D", guide = "none") + #deafult colors were ugly
+  facet_wrap(~lakename)
 ```
+
+```{r scatterplot.3, , fig.cap='Temperature of Lakes At Various Depths Drawn by Lake'}
+LakeChemistryClean |>
+  ggplot(aes(x = depth, y=temperature_C, color = lakename))+
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Relationship Between Lake Depth and Temperature",
+    x = "Depth of Lake (m)",
+    y = expression(Temperature~(degree*C)), 
+    color = "Lake Name"
+  ) + 
+  ylim(0,35) +
+scale_color_viridis_d(option = "D") #deafult colors were ugly
+```
+
 
 15. Use the Tukey's HSD test to determine which lakes have different means.
 
 ```{r tukey.test}
 #15
-
+TukeyHSD(LakeDiffernceAnova)
 
 ```
 
@@ -203,6 +236,11 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 18. Wrangle the July data to include only records for Crampton Lake and Ward Lake. Run the two-sample T-test on these data to determine whether their July temperature are same or different. What does the test say? Are the mean temperatures for the lakes equal? Does that match you answer for part 16?
 
 ```{r t.test}
+LakeChemistryCleanCLWL <- LakeChemistryClean |>
+  filter(lakename %in% c("Crampton Lake", "Ward Lake"))
+
+TTestCLWL<-t.test(temperature_C~ lakename, data=LakeChemistryCleanCLWL)
+print(TTestCLWL)
 
 ```
 
