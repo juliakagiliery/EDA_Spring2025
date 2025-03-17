@@ -88,14 +88,15 @@ GaringerOzone <- GaringerOzone %>%
 # 4
 GaringerOzone <- GaringerOzone |>
   select(Date, Daily.Max.8.hour.Ozone.Concentration, DAILY_AQI_VALUE)
-view(GaringerOzone)
 
 # 5
 
+# Generate sequence of dates from 2010-01-01 to 2019-12-31
+Days <- as.data.frame(seq(as.Date("2010-01-01"), as.Date("2019-12-31"), by = "day"))
+names(Days) <- "Date"
 
 # 6
-
-
+GaringerOzone <- left_join(Days, GaringerOzone)
 ```
 
 ## Visualize
@@ -104,6 +105,16 @@ view(GaringerOzone)
 
 ```{r}
 #7
+GaringerOzone |>
+  ggplot(aes(x = Date, y = Daily.Max.8.hour.Ozone.Concentration)) +
+  geom_line() +
+    geom_smooth(method = "lm") + 
+  labs(
+    y = "Daily Max 8 Hour Ozone Concetration", 
+    title = "Daily Max 8 Hour Ozone Concetration Changing Over Time"
+  )
+
+View(GaringerOzone)
 
 ```
 
@@ -117,6 +128,11 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #8
+GaringerOzone <- GaringerOzone |>
+  mutate(
+    Daily.Max.8.hour.Ozone.Concentration = na.approx(Daily.Max.8.hour.Ozone.Concentration),
+      DAILY_AQI_VALUE = na.approx(DAILY_AQI_VALUE)
+  )
 
 ```
 
@@ -127,7 +143,29 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #9
+GaringerOzone.monthly <- GaringerOzone |>
+  mutate(
+    Month = format(Date, "%m"),
+    Day =  format(Date, "%d"),
+    Year = format(Date, "%Y")
+  )
 
+View(GaringerOzone.monthly)
+
+GaringerOzone.monthly <- GaringerOzone.monthly |>
+  group_by(Month, Year) |>
+  summarise(
+    MeanOzone = mean(Daily.Max.8.hour.Ozone.Concentration), 
+    MeanAQI = mean(DAILY_AQI_VALUE)
+  )
+
+
+GaringerOzone.monthly <- GaringerOzone.monthly |>
+  mutate(
+    Date = dmy(paste("01", Month, Year))
+  )
+
+View(GaringerOzone.monthly)
 ```
 
 
@@ -136,6 +174,17 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 ```{r}
 #10
 
+min(GaringerOzone$Date)
+
+GaringerOzone <- GaringerOzone |>
+  select(Daily.Max.8.hour.Ozone.Concentration)
+
+GaringerOzone.daily.ts <- ts(GaringerOzone, start = c(2010, 1), frequency = 365)
+
+
+
+
+
 ```
 
 
@@ -143,7 +192,7 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #11
-
+plot(GaringerOzone.daily.ts)
 
 ```
 
