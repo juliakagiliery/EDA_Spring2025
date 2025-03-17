@@ -176,13 +176,9 @@ View(GaringerOzone.monthly)
 
 min(GaringerOzone$Date)
 
-GaringerOzone <- GaringerOzone |>
-  select(Daily.Max.8.hour.Ozone.Concentration)
+GaringerOzone.daily.ts <- ts(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration, start = c(2010, 1), frequency = 365)
 
-GaringerOzone.daily.ts <- ts(GaringerOzone, start = c(2010, 1), frequency = 365)
-
-
-
+GaringerOzone.monthly.ts <- ts(GaringerOzone.monthly$MeanOzone, start = c(2010, 1), frequency = 12)
 
 
 ```
@@ -193,7 +189,12 @@ GaringerOzone.daily.ts <- ts(GaringerOzone, start = c(2010, 1), frequency = 365)
 ```{r}
 #11
 plot(GaringerOzone.daily.ts)
+GaringerOzone.daily.ts_decomp=stl(GaringerOzone.daily.ts, s.window = "periodic")
+plot(GaringerOzone.daily.ts_decomp)
 
+plot(GaringerOzone.monthly.ts)
+GaringerOzone.monthly.ts_decomp=stl(GaringerOzone.monthly.ts, s.window = "periodic")
+plot(GaringerOzone.monthly.ts_decomp)
 ```
 
 
