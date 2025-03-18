@@ -195,7 +195,8 @@ GaringerOzone.monthly.ts <- ts(GaringerOzone.monthly$MeanOzone, start = c(2010, 
 GaringerOzone.daily.ts_decomp=stl(GaringerOzone.daily.ts, s.window = "periodic")
 plot(GaringerOzone.daily.ts_decomp)
 
-GaringerOzone.monthly.ts_decomp=stl(GaringerOzone.monthly.ts, s.window = "periodic")
+GaringerOzone.monthly.ts_decomp = stl(GaringerOzone.monthly.ts, s.window = "periodic")
+
 plot(GaringerOzone.monthly.ts_decomp) #okay I know this is incorrect and I have no idea why 
 ```
 
