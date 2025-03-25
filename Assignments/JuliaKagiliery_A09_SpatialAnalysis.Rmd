@@ -167,6 +167,9 @@ str(NESiteFlow)
 #16. Join the flow data to our NWIS gage location spatial dataframe
 NESiteData <- full_join(NESiteFlow, NEGages_sf, by = "site_no")
 
+NESiteData <- st_as_sf(NESiteData, sf_column_name = "geometry", crs = st_crs(NEGages_sf)) #fulljoin made it into a data frame so have to turn it back into an SF
+
+
 #17. Show the column names in the resulting spatial dataframe
 
 colnames(NESiteData)
@@ -182,11 +185,14 @@ dim(NESiteData)
 Now we can examine where the flooding appears most acute by visualizing gage heights spatially.
 19.   Plot the gage sites on top of counties (using `mapview`, `ggplot`, or `leaflet`) 
     *   Show the magnitude of gage height by color, shape, other visualization technique.
-
+    
 ```{r map gage sites}
-#Map the points, sized by gage height
-
-
+ggplot() +
+  geom_sf(data = counties_sf, color = "gray") + 
+  geom_sf(data = NESiteData, aes(color = gage_ht, size = gage_ht)) + #want both color and size to be showing gage height but R does not like this, next two lines force there to only be one legend.
+  scale_color_viridis_c(name = "Gage Height (m)", guide = "legend") +  
+  scale_size_continuous(name = "Gage Height (m)", guide = "legend") +  
+  labs(title = "Gage Heights in NE")
 ```
 
 ---
@@ -203,13 +209,14 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 
 ```{r spatial analysis}
 #20 Transform the counties and gage location datasets to UTM Zone 14
-
-
+counties_sf_utm <-      st_transform(counties_sf, crs = 32614)
+NESiteData_utm <-      st_transform(NESiteData, crs = 32614)
 
 #21 Plot the data
-
-
-
+ggplot() +
+  geom_sf(data = counties_sf_utm, color = "gray") + 
+  geom_sf(data = NESiteData_utm, aes(color =gage_ht)) +
+    scale_color_viridis_b() 
 ```
 
 
@@ -228,15 +235,32 @@ Now let's zoom into a particular county and examine the gages located there.
 
 ```{r spatial selection}
 #22 Select the county
-
+counties_sf_utmSaunders <- counties_sf_utm |>
+  filter(
+    NAME == "Saunders"
+  )
 
 #23 Spatially select gages within the selected county
 
+NESiteData_utm_intersect <- NESiteData_utm |>
+  st_filter(counties_sf_utmSaunders, .predicate = st_intersects)
 
 #24 Spatially select gages within 15 k of the selected county
 
+county_buffer <- st_buffer(counties_sf_utmSaunders, dist = 15000) 
+
+gages_within_15km <- NESiteData_utm |>
+  st_filter(county_buffer, .predicate = st_intersects)
 
 #25 Plot
-
+ggplot() +
+  geom_sf(data = counties_sf_utm, color = "navy", fill = NA) +  
+  geom_sf(data = counties_sf_utmSaunders, fill = "lightblue", color = "blue") +
+  geom_sf(data = NESiteData_utm_intersect, color = "pink", shape = 16) +
+  geom_sf(data = gages_within_15km, color = "red", shape = 17) +  
+  labs(
+    title = "Gage Sites and Saunders County",
+    subtitle = "Pink: Gages in Saunders County | Red: Gages within 15km of Saunders County | Blue: Saunders County"
+  )
 
 ```
