@@ -34,6 +34,7 @@ library(leaflet)
 library(here)
 library(mapview)
 library(sf)
+library(dplyr)
 
 #2. 
 here()
@@ -80,17 +81,19 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 ```{r Read in USGS Gage Locations}
 #7. Read in gage locations csv as a dataframe
 
+NEGages<- read.csv(here('Data/Raw/NWIS_SiteInfo_NE_RAW.csv'))
 
+NEGages <- NEGages |> 
+  mutate(across(everything(), as.factor))
 
 #8. Display the structure of the dataframe
-
+str(NEGages)
 
 ```
 
 9.    What columns in the dataset contain the x and y coordinate values, respectively?  
 > ANSWER:
-> 
-
+> dec_lat_va is the latitude which makes it the Y axis (because it measures from north to south), and dec_long_va is the longitude which makes it the x asxis (measures from east to west).
 
 ### Convert the dataframe to a spatial features ("sf") dataframe
 
