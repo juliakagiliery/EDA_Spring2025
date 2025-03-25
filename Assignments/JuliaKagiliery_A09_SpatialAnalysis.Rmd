@@ -256,8 +256,8 @@ gages_within_15km <- NESiteData_utm |>
 ggplot() +
   geom_sf(data = counties_sf_utm, color = "navy", fill = NA) +  
   geom_sf(data = counties_sf_utmSaunders, fill = "lightblue", color = "blue") +
-  geom_sf(data = NESiteData_utm_intersect, color = "pink", shape = 16) +
-  geom_sf(data = gages_within_15km, color = "red", shape = 17) +  
+  geom_sf(data = NESiteData_utm_intersect, color = "purple", size = 3) +
+  geom_sf(data = gages_within_15km, color = "yellow", shape = 17, size = 2) +  
   labs(
     title = "Gage Sites and Saunders County",
     subtitle = "Pink: Gages in Saunders County | Red: Gages within 15km of Saunders County | Blue: Saunders County"
