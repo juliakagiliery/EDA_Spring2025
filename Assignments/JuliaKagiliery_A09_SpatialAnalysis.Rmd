@@ -28,13 +28,16 @@ This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) 
 
 ```{r Prepare workspace, error=F, warning=F}
 #1. 
-
+library(tidyverse)
+library(sf)
+library(leaflet)
+library(here)
+library(mapview)
+library(sf)
 
 #2. 
-
-
+here()
 ```
-
 
 ### Read (and filter) county features into an sf dataframe and plot
 
@@ -47,18 +50,22 @@ In this exercise, we will be exploring stream gage height data in Nebraska corre
 ```{r Read the county data into an sf dataframe}
 #3. Read in Counties shapefile into an sf dataframe, filtering for just NE counties
 
+counties_sf<- st_read(here('Data/Raw/Spatial/cb_2018_us_county_20m.shp')) |> 
+  filter(STATEFP == 31) #Filter for just NE Counties
 
 #4. Reveal the CRS of the counties features
-
+st_crs(counties_sf)$epsg
 
 #5. Plot the data
-
+counties_sf |>
+ggplot() +
+  geom_sf()
 
 ```
 
 6.    What is the EPSG code of the Counties dataset? Is this a geographic or a projected coordinate reference system? (In other words, does this CRS use angular or planar coordinate units?) To what datum is this CRS associated? (Tip: lookup the EPSG code on <https://epsg.io> or <https://spatialreference.org>)
 
-> ANSWER: 
+> ANSWER: The EPSG code is 4269 which is a geographic 2D CRS (angular cordinates) which includes North America. The datum associated with it is NAD83. 
 > 
 
 
