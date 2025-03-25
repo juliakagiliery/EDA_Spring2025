@@ -154,24 +154,26 @@ Lastly, we want to attach some gage height data to our site locations. I've cons
 
 ```{r Read in gage site data}
 #14. Read the site flow data into a data frame
+NESiteFlow<- read.csv(here('Data/Raw/NWIS_SiteFlowData_NE_RAW.csv'))
 
+NESiteFlow <- NESiteFlow |> 
+  mutate(across(where(is.character), as.factor))
 
 
 #15. Show the structure of the dataframe 
-
+str(NESiteFlow)
 
 
 #16. Join the flow data to our NWIS gage location spatial dataframe
-
-
+NESiteData <- full_join(NESiteFlow, NEGages_sf, by = "site_no")
 
 #17. Show the column names in the resulting spatial dataframe
 
-
+colnames(NESiteData)
 
 #18. Show the dimensions of this joined dataset
 
-
+dim(NESiteData)
 
 ```
 
