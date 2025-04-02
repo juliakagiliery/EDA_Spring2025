@@ -94,9 +94,27 @@ max_day_use_mgd
 
 ```{r create.a.dataframe.from.scraped.data}
 #4 
+NcPowerData <- data.frame(
+  "Month" = 1:12,
+  "Year" = rep(2024, 12),  # Ensure it's numeric
+  "Date" = as.Date(paste(2024, 1:12, 1, sep = "-")),  
+  "Water System" = rep("Durham", 12),
+  "Ownership" = rep("Municipality", 12),
+  "PWSID" = rep("03-32-010", 12),
+  "Maximum Daily Withdrawals" = as.numeric(max_day_use_mgd)
+)
+
+
+print(NcPowerData)
 
 
 #5 
+NcPowerData |>
+  ggplot(aes(x = factor(Month, levels = 1:12, labels = month.abb), 
+             y = max_day_use_mgd, group = 1)) +
+  geom_line() +
+  labs(x="Month", y="Maximum Daily Withdrawals (MGD)",
+title="Changes in Maximum Daily Withdrawls in 2024")
 
 
 ```
