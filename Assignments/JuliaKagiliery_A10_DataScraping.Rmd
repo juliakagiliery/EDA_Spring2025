@@ -29,6 +29,8 @@ This exercise accompanies the lessons in Environmental Data Analytics on data sc
 #1 
 library(tidyverse)
 library(rvest)
+library(dplyr)
+library(lubridate)
 
 getwd()
 ```
@@ -127,7 +129,64 @@ title="Changes in Maximum Daily Withdrawls in 2024")
 
 
 ```{r construct.a.scraping.function}
-#6. 
+#6.
+
+PWSID_tag <- 'td tr:nth-child(1) td:nth-child(5)'
+water_system_tag <- 'div+ table tr:nth-child(1) td:nth-child(2)'
+maximum_daily_use_tag <- 'th~ td+ td'
+ownership_tag <- 'div+ table tr:nth-child(2) td:nth-child(4)'
+
+base_url <- 'https://www.ncwater.org/WUDC/app/LWSP/report.php?'
+PWSID <- '03-32-010'
+the_year <- 2024
+
+scrape_url <- paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=', PWSID, '&year=', the_year)
+
+scrapewebsite <- read_html(scrape_url)
+
+PWSID <- webpage %>%
+  html_nodes(PWSID_tag) %>%
+  html_text() 
+
+WaterSystem <- webpage %>%
+  html_nodes(water_system_tag) %>%
+  html_text() 
+
+MaxDayUse <- webpage %>%
+  html_nodes(maximum_daily_use_tag) %>%
+  html_text() 
+
+Ownership <- webpage %>%
+  html_nodes(ownership_tag) %>%
+  html_text() 
+
+scrape_it <- function(the_year, PWSID) {
+  website <- read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=', PWSID, '&year=', the_year))
+
+  # Extract data
+  PWSID_value <- website %>% html_nodes(PWSID_tag) %>% html_text() %>% trimws()
+  WaterSystem_value <- website %>% html_nodes(water_system_tag) %>% html_text() %>% trimws()
+  MaxDayUse_value <- website %>% html_nodes(maximum_daily_use_tag) %>% html_text() %>% as.numeric()
+  Ownership_value <- website %>% html_nodes(ownership_tag) %>% html_text() %>% trimws()
+
+  # Ensure MaxDayUse_value has 12 elements (one per month)
+  if (length(MaxDayUse_value) != 12) {
+    stop("Error: Maximum daily use data does not contain 12 values.")
+  }
+
+  # Construct the dataframe
+  dataframe_LWSP <- data.frame(
+    "Month" = 1:12,
+    "Year" = rep(the_year, 12),
+    "Max Daily Use" = MaxDayUse_value,
+    "Ownership" = rep(Ownership_value, 12),
+    "PWSID" = rep(PWSID_value, 12),
+    "Water System" = rep(WaterSystem_value, 12),
+    "Date" = as.Date(paste(the_year, 1:12, 1, sep = "-"))
+  )
+
+  return(dataframe_LWSP)
+}
 
 
 ```
