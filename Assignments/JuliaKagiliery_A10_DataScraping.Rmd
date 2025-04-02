@@ -195,15 +195,31 @@ scrape_it <- function(the_year, PWSID) {
 
 ```{r fetch.and.plot.Durham.2020.data}
 #7 
+Durham2020Data <- scrape_it(2020, '03-32-010')
 
-
+Durham2020Data |>
+  ggplot(aes(x = factor(Month, levels = 1:12, labels = month.abb), 
+             y = Max.Daily.Use, group = 1)) +
+  geom_line() +
+  labs(x="Month", y="Maximum Daily Withdrawals (MGD)",
+title="Changes in Maximum Daily Withdrawls in Durham 2020")
 ```
 
 8. Use the function above to extract data for Asheville (PWSID = '01-11-010') in 2020. Combine this data with the Durham data collected above and create a plot that compares Asheville's to Durham's water withdrawals.
 
 ```{r fetch.and.plot.Asheville.2020.data}
 #8 
+Ashville2020Data <- scrape_it(2020, '01-11-010')
 
+DUAS202Data <- left_join(Durham2020Data, Ashville2020Data, by = "Date")
+
+
+DUAS202Data |>
+  ggplot() +
+geom_line(aes(x=Date, y=Max.Daily.Use.x, color="Durham")) +
+geom_line(aes(x=Date, y=Max.Daily.Use.y, color="Asheville")) +
+labs(title="Maximum Daily Use Comparison", x="Month", y="Max Daily Use (MGD)")
+ 
 
 ```
 
@@ -214,10 +230,23 @@ scrape_it <- function(the_year, PWSID) {
 
 ```{r fetch.and.plot.Asheville.multiyear.data }
 #9 
+years <- rep(2018:2023)
 
+Asheville <- lapply(X = years, FUN = scrape_it, PWSID = '01-11-010')
+Asheville <- bind_rows(Asheville)
+
+Asheville |>
+  ggplot(aes(x = Date, y = Max.Daily.Use)) +
+  geom_line() +
+  geom_smooth(method = "loess", se=FALSE) +
+  labs(
+    title = "Monthly Max Daily Use in Asheville From 2018-2023", 
+    x = "Year",
+    y = "Max Daily Use"
+  )
 
 ```
 
 Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
-> Answer:
+> Answer: Just by looking at the graph, it does appear, based on the trend line, that Asheville does have an increasing trend in use over time. 
 >
