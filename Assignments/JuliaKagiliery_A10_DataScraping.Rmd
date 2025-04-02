@@ -64,23 +64,23 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 ```{r scrape.the.data}
 #3 
-water_system_name <- webpage %>%
-  html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>%
+water_system_name <- webpage |>
+  html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") |>
   html_text() 
 water_system_name
 
-pwsid <- webpage %>%
-  html_nodes("td tr:nth-child(1) td:nth-child(5)") %>%
+pwsid <- webpage |>
+  html_nodes("td tr:nth-child(1) td:nth-child(5)") |>
   html_text() 
 pwsid
 
-ownership <- webpage %>%
-  html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>%
+ownership <- webpage |>
+  html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") |>
   html_text() 
 ownership
 
-max_day_use_mgd <- webpage %>%
-  html_nodes("th~ td+ td") %>%
+max_day_use_mgd <- webpage |>
+  html_nodes("th~ td+ td") |>
   html_text() 
 max_day_use_mgd
 ```
@@ -109,7 +109,6 @@ NcPowerData <- data.frame(
 
 print(NcPowerData)
 
-
 #5 
 NcPowerData |>
   ggplot(aes(x = factor(Month, levels = 1:12, labels = month.abb), 
@@ -117,8 +116,6 @@ NcPowerData |>
   geom_line() +
   labs(x="Month", y="Maximum Daily Withdrawals (MGD)",
 title="Changes in Maximum Daily Withdrawls in 2024")
-
-
 ```
 
 6. Note that the PWSID and the year appear in the web address for the page we scraped. Construct a function with two input - "PWSID" and "year" - that:
@@ -140,34 +137,35 @@ base_url <- 'https://www.ncwater.org/WUDC/app/LWSP/report.php?'
 PWSID <- '03-32-010'
 the_year <- 2024
 
-scrape_url <- paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=', PWSID, '&year=', the_year)
+scrape_url <- paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=', 
+                     PWSID, '&year=', the_year)
 
 scrapewebsite <- read_html(scrape_url)
 
-PWSID <- webpage %>%
-  html_nodes(PWSID_tag) %>%
+PWSID <- webpage |>
+  html_nodes(PWSID_tag) |>
   html_text() 
 
-WaterSystem <- webpage %>%
-  html_nodes(water_system_tag) %>%
+WaterSystem <- webpage |>
+  html_nodes(water_system_tag) |>
   html_text() 
 
-MaxDayUse <- webpage %>%
-  html_nodes(maximum_daily_use_tag) %>%
+MaxDayUse <- webpage |>
+  html_nodes(maximum_daily_use_tag) |>
   html_text() 
 
-Ownership <- webpage %>%
-  html_nodes(ownership_tag) %>%
+Ownership <- webpage |>
+  html_nodes(ownership_tag) |>
   html_text() 
 
 scrape_it <- function(the_year, PWSID) {
   website <- read_html(paste0('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=', PWSID, '&year=', the_year))
 
   # Extract data
-  PWSID_value <- website %>% html_nodes(PWSID_tag) %>% html_text() %>% trimws()
-  WaterSystem_value <- website %>% html_nodes(water_system_tag) %>% html_text() %>% trimws()
-  MaxDayUse_value <- website %>% html_nodes(maximum_daily_use_tag) %>% html_text() %>% as.numeric()
-  Ownership_value <- website %>% html_nodes(ownership_tag) %>% html_text() %>% trimws()
+  PWSID_value <- website |> html_nodes(PWSID_tag) |> html_text()
+  WaterSystem_value <- website |> html_nodes(water_system_tag) |> html_text()
+  MaxDayUse_value <- website |> html_nodes(maximum_daily_use_tag) |> html_text() |> as.numeric()
+  Ownership_value <- website |> html_nodes(ownership_tag) |> html_text() |> trimws()
 
   # Ensure MaxDayUse_value has 12 elements (one per month)
   if (length(MaxDayUse_value) != 12) {
@@ -187,8 +185,6 @@ scrape_it <- function(the_year, PWSID) {
 
   return(dataframe_LWSP)
 }
-
-
 ```
 
 7. Use the function above to extract and plot max daily withdrawals for Durham (PWSID='03-32-010') for each month in 2020
@@ -213,14 +209,11 @@ Ashville2020Data <- scrape_it(2020, '01-11-010')
 
 DUAS202Data <- left_join(Durham2020Data, Ashville2020Data, by = "Date")
 
-
 DUAS202Data |>
   ggplot() +
 geom_line(aes(x=Date, y=Max.Daily.Use.x, color="Durham")) +
 geom_line(aes(x=Date, y=Max.Daily.Use.y, color="Asheville")) +
 labs(title="Maximum Daily Use Comparison", x="Month", y="Max Daily Use (MGD)")
- 
-
 ```
 
 
@@ -244,7 +237,6 @@ Asheville |>
     x = "Year",
     y = "Max Daily Use"
   )
-
 ```
 
 Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
